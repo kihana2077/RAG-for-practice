@@ -1,6 +1,8 @@
 # RAG-for-practice
 
 轻量级 RAG（Retrieval-Augmented Generation）练习项目
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.13](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/)
 
 功能概览
 - 支持将本地 TXT 文件拆分并上传到 Chroma 向量数据库
