@@ -1,0 +1,16 @@
+[project]
+name = "rag-for-practice"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "langchain>=1.2.15",
+    "langchain-chroma>=1.1.0",
+    "langchain-community>=0.4.1",
+    "langchain-core>=1.2.26",
+    "langchain-openai>=1.1.12",
+    "langchain-text-splitters>=1.1.1",
+    "protobuf<3.21",
+    "streamlit>=1.56.0",
+]
