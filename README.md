@@ -49,7 +49,6 @@ $env:OPENAI_API_KEY = "your_api_key"
 - 或创建一个 `config_local.py`（加入 `.gitignore`），示例：
 
 ```py
-# config_local.py (不要提交到仓库)
 OPENAI_API_KEY = "your_api_key"
 OPENAI_BASE_URL = "https://api.your-provider.com/v1"
 EMBEDDING_MODEL_NAME = "your-embedding-model"
