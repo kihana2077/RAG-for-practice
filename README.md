@@ -1,9 +1,9 @@
 # RAG-for-practice
 
-轻量级 RAG（Retrieval-Augmented Generation）练习项目
+轻量级 RAG（Retrieval-Augmented Generation）练习项目  
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.13](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/)
-
+[![Langchain](https://img.shields.io/badge/Built_from-langchain-blue)](https://github.com/langchain-ai/langchain)
 功能概览
 - 支持将本地 TXT 文件拆分并上传到 Chroma 向量数据库
 - 使用向量检索 + 聊天模型进行问答（RAG）
