@@ -18,7 +18,6 @@ class ChatHistoryService(object):
         self.history.clear()
 
     def get_history_text(self, session_id: str = "default"):
-        """Return chat history as a plain text string for prompt injection."""
         messages = getattr(self.history, "messages", []) or []
         if not messages:
             return ""

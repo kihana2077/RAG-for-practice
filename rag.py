@@ -58,7 +58,7 @@ class RagService(object):
         return chain
 
     def __get_chain_with_history(self):
-        def get_session_history(session_id: str):
+        def get_session_history(session_id: str):  #未做session id区分，默认一个session，以后补上该逻辑
             return self.chat_history_service.history
 
         return RunnableWithMessageHistory(
@@ -66,16 +66,16 @@ class RagService(object):
             get_session_history=get_session_history,
             input_messages_key="input",
             history_messages_key="chat_history",
-        )
+        )#RunnableWithMessageHistory 把历史管理从 Chain 中解耦出来，Chain 只管检索和生成，历史由外层统一管理。这样 Chain 更纯粹，历史管理更灵活。
 
-    def ask(self, question, session_id="default"):
+    def ask(self, question, session_id="default") -> str: #静态返回
         response = self.chain_with_history.invoke(
             {"input": question},
             config={"configurable": {"session_id": session_id}}
         )
         return response
 
-    def ask_stream(self, question, session_id="default"):
+    def ask_stream(self, question, session_id="default"): #返回一个迭代器，流式输出
         try:
             for chunk in self.chain_with_history.stream(
                 {"input": question},
