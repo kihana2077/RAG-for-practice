@@ -1,13 +1,14 @@
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 import configdata as config
+from pydantic import SecretStr
 
 class VectorStoreService(object):
     def __init__(self,embeddings):
         self.embeddings = OpenAIEmbeddings(
             model=config.embedding_model_name,
-            api_key=config.openai_api_key,
-            base_url=config.openai_base_url,
+            api_key=SecretStr(config.embedding_api_key or config.openai_api_key),
+            base_url=(config.embedding_api_base_url or config.openai_base_url),
         )
         self.vector_store = Chroma(
             collection_name=config.collection_name,

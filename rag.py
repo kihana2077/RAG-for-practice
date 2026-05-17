@@ -4,6 +4,7 @@ from langchain_core.runnables import Runnable, RunnablePassthrough
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
+from pydantic import SecretStr
 from langchain_core.output_parsers import StrOutputParser
 from vector_stores import VectorStoreService
 from chat_history import ChatHistoryService
@@ -31,14 +32,14 @@ class RagService(object):
         self.vector_service = VectorStoreService(
             embeddings=OpenAIEmbeddings(
                 model=config.embedding_model_name,
-                api_key=config.openai_api_key,
-                base_url=config.openai_base_url,
+                api_key=SecretStr(config.embedding_api_key or config.openai_api_key),
+                base_url=(config.embedding_api_base_url or config.openai_base_url),
             )
         )
 
         self.prompt_template = ChatPromptTemplate(
             [
-                ("system","以提供的已知内容为主，回答用户问题。参考资料：{context}"),
+                ("system","以提供的已知内容为主，结合大模型自身数据库，回答用户问题。参考资料：{context}"),
                 ("placeholder", "{chat_history}"),
                 ("user","请回答用户提问:{input}"),
             ]
@@ -46,8 +47,8 @@ class RagService(object):
 
         self.chat_model = ChatOpenAI(
             model=config.chat_model_name,
-            api_key=config.openai_api_key,
-            base_url=config.openai_base_url,
+            api_key=SecretStr(config.chat_api_key or config.openai_api_key),
+            base_url=(config.chat_api_base_url or config.openai_base_url),
         )
 
         self.chat_history_service = ChatHistoryService()
@@ -124,8 +125,8 @@ class RagService(object):
         try:
             stream_llm = ChatOpenAI(
                 model=config.chat_model_name,
-                api_key=config.openai_api_key,
-                base_url=config.openai_base_url,
+                api_key=SecretStr(config.chat_api_key or config.openai_api_key),
+                base_url=(config.chat_api_base_url or config.openai_base_url),
                 streaming=True,
             )
 
