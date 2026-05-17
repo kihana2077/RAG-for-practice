@@ -1,7 +1,9 @@
 # RAG-for-practice
 
-轻量级 RAG（Retrieval-Augmented Generation）练习项目
-
+轻量级 RAG（Retrieval-Augmented Generation）练习项目  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.13](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/)
+[![Langchain](https://img.shields.io/badge/Built_from-langchain-blue)](https://github.com/langchain-ai/langchain)  
 功能概览
 - 支持将本地 TXT 文件拆分并上传到 Chroma 向量数据库
 - 使用向量检索 + 聊天模型进行问答（RAG）
@@ -49,7 +51,6 @@ $env:OPENAI_API_KEY = "your_api_key"
 - 或创建一个 `config_local.py`（加入 `.gitignore`），示例：
 
 ```py
-# config_local.py (不要提交到仓库)
 OPENAI_API_KEY = "your_api_key"
 OPENAI_BASE_URL = "https://api.your-provider.com/v1"
 EMBEDDING_MODEL_NAME = "your-embedding-model"
