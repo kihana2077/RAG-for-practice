@@ -2,17 +2,11 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable, RunnablePassthrough
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from pydantic import SecretStr
-from langchain_core.output_parsers import StrOutputParser
 from vector_stores import VectorStoreService
 from chat_history import ChatHistoryService
+from services import Services
 import configdata as config
-import threading
-import queue
-from langchain_core.callbacks.base import BaseCallbackHandler
-from langchain_core.callbacks.manager import CallbackManager
 
 def print_prompt(prompt):
     print(prompt.to_string())
@@ -29,13 +23,7 @@ class DictToStr(Runnable):
 
 class RagService(object):
     def __init__(self):
-        self.vector_service = VectorStoreService(
-            embeddings=OpenAIEmbeddings(
-                model=config.embedding_model_name,
-                api_key=SecretStr(config.embedding_api_key or config.openai_api_key),
-                base_url=(config.embedding_api_base_url or config.openai_base_url),
-            )
-        )
+        self.vector_service = VectorStoreService()
 
         self.prompt_template = ChatPromptTemplate(
             [
@@ -45,11 +33,7 @@ class RagService(object):
             ]
         )
 
-        self.chat_model = ChatOpenAI(
-            model=config.chat_model_name,
-            api_key=SecretStr(config.chat_api_key or config.openai_api_key),
-            base_url=(config.chat_api_base_url or config.openai_base_url),
-        )
+        self.chat_model = Services.get_chat_model()
 
         self.chat_history_service = ChatHistoryService()
 
@@ -123,12 +107,7 @@ class RagService(object):
         prompt_text = f"以提供的已知内容为主，回答用户问题。参考资料：{context}\n{history_text}\n请回答用户提问:{question}"
 
         try:
-            stream_llm = ChatOpenAI(
-                model=config.chat_model_name,
-                api_key=SecretStr(config.chat_api_key or config.openai_api_key),
-                base_url=(config.chat_api_base_url or config.openai_base_url),
-                streaming=True,
-            )
+            stream_llm = Services.get_chat_model(streaming=True)
 
             for chunk in stream_llm.stream(prompt_text):
                 content = getattr(chunk, "content", None)

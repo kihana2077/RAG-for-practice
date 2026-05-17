@@ -1,11 +1,9 @@
 import os
-from langchain_chroma import Chroma
 import configdata as config
 import hashlib
-from langchain_openai import OpenAIEmbeddings
-from pydantic import SecretStr
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from datetime import datetime
+from services import Services
 
 def check_md5(md5_str:str):
     if not os.path.exists(config.md5_path):
@@ -29,18 +27,9 @@ def get_string_md5(input_str:str,encoding='utf-8'):
     md5_hex = md5_obj.hexdigest()
     return md5_hex
 
-class KonwledgeBaseService(object):
+class KnowledgeBaseService(object):
     def __init__(self):
-        self.embeddings = OpenAIEmbeddings(
-            model=config.embedding_model_name,
-            api_key=SecretStr(config.embedding_api_key or config.openai_api_key),
-            base_url=(config.embedding_api_base_url or config.openai_base_url),
-        )
-        self.Chroma = Chroma(
-            collection_name=config.collection_name,
-            embedding_function=self.embeddings,
-            persist_directory=config.persist_directory,
-        )
+        self.vector_store = Services.get_vector_store()
         self.spliter = RecursiveCharacterTextSplitter(
             chunk_size = config.chunk_size,
             chunk_overlap = config.chunk_overlap,
@@ -61,7 +50,7 @@ class KonwledgeBaseService(object):
         }
         for i in range(0, len(knowledge_chunks), config.max_embedding_batch_size):
             batch = knowledge_chunks[i:i + config.max_embedding_batch_size]
-            self.Chroma.add_texts(
+            self.vector_store.add_texts(
                 batch,
                 metadatas=[metadata for _ in batch],
             )

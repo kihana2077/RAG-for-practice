@@ -1,5 +1,5 @@
 import streamlit as st
-from knowledge_base import KonwledgeBaseService
+from knowledge_base import KnowledgeBaseService
 from rag import RagService
 from chat_history import ChatHistoryService
 import configdata as config
@@ -23,7 +23,7 @@ st.markdown(CSS, unsafe_allow_html=True)
 
 def init_services():
     if "kb_service" not in st.session_state:
-        st.session_state["kb_service"] = KonwledgeBaseService()
+        st.session_state["kb_service"] = KnowledgeBaseService()
     if "rag" not in st.session_state:
         st.session_state["rag"] = RagService()
     if "history" not in st.session_state:
@@ -34,7 +34,7 @@ def init_services():
 
 init_services()
 
-kb_service: KonwledgeBaseService = st.session_state["kb_service"]
+kb_service: KnowledgeBaseService = st.session_state["kb_service"]
 rag: RagService = st.session_state["rag"]
 history: ChatHistoryService = st.session_state["history"]
 
@@ -47,7 +47,7 @@ with st.sidebar:
         filename = uploaded.name
         # 兼容不同方法名
         if hasattr(kb_service, "upload_by_string"):
-            res = kb_service.upload_by_string(txt, filename)
+            res = kb_service.upload_by_str(txt, filename)
         else:
             res = kb_service.upload_by_str(txt, filename)
         st.success(res)
