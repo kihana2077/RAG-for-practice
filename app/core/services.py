@@ -1,7 +1,7 @@
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_chroma import Chroma
 from pydantic import SecretStr
-import configdata as config
+from app.config import settings as config
 
 #定义工具类用于创建嵌入模型、向量库和聊天模型的单例实例，使所有模块共享同一个实例
 class Services:

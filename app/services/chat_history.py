@@ -1,5 +1,5 @@
 from langchain_community.chat_message_histories import FileChatMessageHistory
-import configdata as config
+from app.config import settings as config
 
 class ChatHistoryService(object):
     def __init__(self):

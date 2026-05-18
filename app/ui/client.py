@@ -1,8 +1,8 @@
 import streamlit as st
-from knowledge_base import KnowledgeBaseService
-from rag import RagService
-from chat_history import ChatHistoryService
-import configdata as config
+from app.services.knowledge_base import KnowledgeBaseService
+from app.core.rag import RagService
+from app.services.chat_history import ChatHistoryService
+from app.config import settings as config
 import time
 
 

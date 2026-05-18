@@ -1,5 +1,5 @@
-from services import Services
-import configdata as config
+from app.core.services import Services
+from app.config import settings as config
 
 
 class VectorStoreService(object):

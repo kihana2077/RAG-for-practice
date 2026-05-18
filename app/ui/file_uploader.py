@@ -1,5 +1,5 @@
 import streamlit as st
-from knowledge_base import KnowledgeBaseService
+from app.services.knowledge_base import KnowledgeBaseService
 
 st.title("知识库文件上传系统")
 new_file = st.file_uploader(

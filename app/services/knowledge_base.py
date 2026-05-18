@@ -1,9 +1,9 @@
 import os
-import configdata as config
+from app.config import settings as config
 import hashlib
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from datetime import datetime
-from services import Services
+from app.core.services import Services
 
 def check_md5(md5_str:str):
     if not os.path.exists(config.md5_path):

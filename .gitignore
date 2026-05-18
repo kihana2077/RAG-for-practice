@@ -16,3 +16,5 @@ wheels/
 chat_history.json
 md5_file.txt
 chroma_db/
+
+.claude/

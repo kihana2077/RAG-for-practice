@@ -3,9 +3,9 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate
-from vector_stores import VectorStoreService
-from chat_history import ChatHistoryService
-from services import Services
+from app.services.vector_stores import VectorStoreService
+from app.services.chat_history import ChatHistoryService
+from app.core.services import Services
 
 def print_prompt(prompt):
     print(prompt.to_string())
@@ -81,10 +81,10 @@ class RagService(object):
                 {"input": question},
                 config={"configurable": {"session_id": session_id}},
             ):
-                content = getattr(chunk, "content", None)
-                if content is None:
-                    continue
-                yield str(content)
+                # StrOutputParser 返回 TextAccessor，直接转 str
+                text = str(chunk)
+                if text:
+                    yield text
         except Exception as e:
             yield f"[ERROR] {e}"
 
