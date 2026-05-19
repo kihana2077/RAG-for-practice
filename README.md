@@ -22,16 +22,28 @@
 
 ```
 RAG-for-practice/
-├── client.py              # Streamlit 前端入口
-├── rag.py                 # RAG 核心逻辑（Chain 组装、对话、流式输出）
-├── knowledge_base.py      # 知识库管理（文档上传、分块、入库）
-├── vector_stores.py       # 向量数据库服务封装
-├── chat_history.py        # 聊天历史管理（JSON 持久化）
-├── configdata.py          # 配置管理（从 .env 读取）
-├── file_uploader.py       # 文件上传工具
-├── .env.example           # 环境变量模板
-├── .env                   # 环境变量（不提交）
-└── chroma_db/             # 向量数据库本地存储（不提交）
+├── app/
+│   ├── __init__.py
+│   ├── core/
+│   │   ├── __init__.py          # 导出 RagService, Services
+│   │   ├── rag.py               # RAG 核心逻辑（Chain 组装、对话、流式输出）
+│   │   └── services.py          # 共享组件单例（Embeddings、Chroma、ChatOpenAI）
+│   ├── services/
+│   │   ├── __init__.py          # 导出 KnowledgeBaseService, VectorStoreService, ChatHistoryService
+│   │   ├── knowledge_base.py    # 知识库管理（文档上传、分块、入库）
+│   │   ├── vector_stores.py     # 向量数据库服务封装
+│   │   └── chat_history.py      # 聊天历史管理（JSON 持久化）
+│   ├── config/
+│   │   ├── __init__.py
+│   │   └── settings.py          # 配置管理（从 .env 读取）
+│   └── ui/
+│       ├── __init__.py
+│       ├── client.py            # Streamlit 前端入口
+│       └── file_uploader.py     # 文件上传工具
+├── chat.py                      # 终端聊天入口
+├── .env.example                 # 环境变量模板
+├── .env                         # 环境变量（不提交）
+└── chroma_db/                   # 向量数据库本地存储（不提交）
 ```
 
 ## 功能概览
@@ -40,8 +52,9 @@ RAG-for-practice/
 - **智能问答**：基于向量检索的 RAG 问答，结合上下文生成回答
 - **模型兼容**：兼容所有 OpenAI 格式的大模型（LLMs）及嵌入模型（Embedding）
 - **聊天历史**：自动保存对话记录，支持上下文连续对话
-- **流式输出**：支持 LLM 流式响应，提升交互体验
-- **Web 界面**：基于 Streamlit 的可视化操作界面
+- **流式输出**：支持 LLM 流式响应，逐 token 输出
+- **双入口**：Web 界面（Streamlit）+ 终端聊天（chat.py）
+- **共享组件**：单例模式管理 Embeddings、Chroma、ChatOpenAI，避免重复创建
 
 ## 安全与配置
 
@@ -56,50 +69,61 @@ cp .env.example .env
 2. 编辑 `.env`，填入你的配置：
 
 ```env
-CHAT_API_KEY=your_chat_api_key
-CHAT_BASE_URL=https://api.your-provider.com/v1
-CHAT_MODEL_NAME=your-chat-model
+# API Key 配置
+OPENAI_API_KEY=
+EMBEDDING_API_KEY=
+CHAT_API_KEY=
 
-EMBEDDING_API_KEY=your_embedding_api_key
-EMBEDDING_BASE_URL=https://api.your-provider.com/v1
-EMBEDDING_MODEL_NAME=your-embedding-model
+# Base URL 配置
+OPENAI_BASE_URL=
+EMBEDDING_BASE_URL=
+CHAT_BASE_URL=
+
+# 模型名称配置
+EMBEDDING_MODEL_NAME=
+CHAT_MODEL_NAME=
 ```
 
 ## 快速启动
 
 ### 方式一：使用 `uv`（推荐）
 
-1. 创建并激活虚拟环境：
-
 ```powershell
 uv venv
-```
-
-2. 安装依赖：
-
-```powershell
 uv sync
-```
-
-3. 启动前端：
-
-```powershell
-streamlit run client.py
 ```
 
 ### 方式二：使用 `pip`
 
 ```powershell
 pip install -r requirements.txt
-streamlit run client.py
+```
+
+### 启动
+
+```powershell
+# Web 界面
+streamlit run app/ui/client.py
+
+# 终端聊天
+python chat.py
 ```
 
 ## 运行与调试
 
-- 侧边栏上传 TXT 文件到知识库（会拆分并入库）
-- 在主界面输入问题，聊天模型会调用向量检索并返回答案，历史会被保存到 `chat_history.json`
+- **Web 界面**：侧边栏上传 TXT 文件到知识库，主界面输入问题进行对话
+- **终端聊天**：直接运行 `python chat.py`，支持流式输出
+- **聊天历史**：自动保存到 `chat_history.json`
+
+## 架构设计
+
+- **LangChain Chain**：声明式管道 `retriever → prompt → LLM → output`
+- **单例服务**：`Services` 类统一管理 Embeddings、Chroma、ChatOpenAI 实例
+- **流式输出**：Chain 原生支持 `stream()`，`ask_stream` 与 `ask` 共享同一套逻辑
+- **历史管理**：`RunnableWithMessageHistory` 自动注入/保存对话历史
 
 ## 常见问题
 
-- 如果出现批量/速率限制错误，请调整 `configdata.py` 中的 `max_embedding_batch_size` 和 `chunk_size`，并咨询你的模型提供商。
-- 若需真实 token 级流式输出，需要后端模型与回调支持，本仓库演示了一个实现方式
+- 如果出现批量/速率限制错误，请调整 `app/config/settings.py` 中的 `max_embedding_batch_size` 和 `chunk_size`
+- 若出现 `APIConnectionError`，检查 `.env` 中的 API Key 和 Base URL 是否正确
+- 若出现 `401 Unauthorized`，API Key 可能已过期，需要重新获取
