@@ -54,7 +54,7 @@ RAG-for-practice/
 - **聊天历史**：自动保存对话记录，支持上下文连续对话
 - **流式输出**：支持 LLM 流式响应，逐 token 输出
 - **双入口**：Web 界面（Streamlit）+ 终端聊天（chat.py）
-- **共享组件**：单例模式管理 Embeddings、Chroma、ChatOpenAI，避免重复创建
+- **共享组件**：单例模式管理 Embeddings、Chroma、ChatOpenAI
 
 ## 安全与配置
 
@@ -127,3 +127,14 @@ python chat.py
 - 如果出现批量/速率限制错误，请调整 `app/config/settings.py` 中的 `max_embedding_batch_size` 和 `chunk_size`
 - 若出现 `APIConnectionError`，检查 `.env` 中的 API Key 和 Base URL 是否正确
 - 若出现 `401 Unauthorized`，API Key 可能已过期，需要重新获取
+
+## 后续更新
+- 完善多轮对话机制，赋予每个对话session_id，优化定位逻辑
+- 完善异步处理机制
+- 封装为接口，完善前端处理机制，前端重构计划
+- 增加api重复调用，避免因api限速等导致的系统强健性不足
+- 正式迈入Agent，增加ToolCalling，完善相应机制
+- 完善Redis缓存机制，避免api重复调用引起的消耗token
+- 改善流式输出SSE，丰富用户体验，逐字输出渲染支持
+
+2026.05 Taken By @Kihana2077
